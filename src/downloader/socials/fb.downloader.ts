@@ -21,7 +21,7 @@ export class FBDownloader implements SocialDownloader {
 
     return {
       thumbURL,
-      videoURL,
+      videoURL: `${videoURL}&dl=1`,
     };
   }
 }

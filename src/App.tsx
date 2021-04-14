@@ -2,11 +2,13 @@ import 'react-native-gesture-handler';
 
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import { StatusBar } from 'react-native';
 
 // import RNBackgroundDownloader from 'react-native-background-downloader';
 
 import { AppRoutes } from './routes/app.routes';
 import { AppProvider } from './hooks';
+import { AppColors } from './styles/colors';
 
 // import { Container } from './styles';
 
@@ -53,11 +55,17 @@ const App: React.FC = () => {
   // };
 
   return (
-    <NavigationContainer>
-      <AppProvider>
-        <AppRoutes />
-      </AppProvider>
-    </NavigationContainer>
+    <>
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor={AppColors.background.color_1}
+      />
+      <NavigationContainer>
+        <AppProvider>
+          <AppRoutes />
+        </AppProvider>
+      </NavigationContainer>
+    </>
   );
 };
 

@@ -22,10 +22,13 @@ enum ScreenState {
   INITIAL = 'initial',
 }
 
+const TEST_VIDEO_LINK =
+  'https://www.facebook.com/chrisramsaytv/videos/696765804212354/';
+
 const VideoLink: React.FC = () => {
   const [thumbImage, setThumbImage] = useState('');
-  const [videoLink, setVideoLink] = useState('');
-  const [inputValue, setInputValue] = useState('');
+  const [videoLink, setVideoLink] = useState(TEST_VIDEO_LINK);
+  const [inputValue, setInputValue] = useState(TEST_VIDEO_LINK);
   const [screenState, setScreenState] = useState<ScreenState>(
     ScreenState.INITIAL,
   );

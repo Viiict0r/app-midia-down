@@ -132,26 +132,26 @@ export const VideoManagerProvider: React.FC = ({ children }) => {
 
     console.log('Procurando tamanho do video...');
 
-    const response = await fetch(video_url, {
-      headers: {
-        'sec-fetch-dest': 'document',
-        'User-Agent':
-          'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36',
-      },
-    });
+    // const response = await fetch(video_url, {
+    //   headers: {
+    //     'sec-fetch-dest': 'document',
+    //     'User-Agent':
+    //       'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36',
+    //   },
+    // });
 
-    const contentLength = response.headers.get('content-length');
+    // const contentLength = response.headers.get('content-length');
 
-    console.log('-------------');
-    console.log('Video content length: ', contentLength);
+    // console.log('-------------');
+    // console.log('Video content length: ', contentLength);
 
     const task = RNBackgroundDownloader.download({
       id: videoId,
       url: video_url,
       destination: videoPath,
-      headers: {
-        Range: `0-${contentLength}`,
-      },
+      // headers: {
+      //   Range: `0-${contentLength}`,
+      // },
     });
 
     handleTask(task, videoObj);
