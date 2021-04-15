@@ -3,6 +3,8 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Feather';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
 
+import { IVideo } from '../../hooks/videoManager';
+
 import {
   Container,
   Thumbnail,
@@ -17,7 +19,24 @@ import {
   VideoProgressStatus,
 } from './styles';
 
-export const Video: React.FC = () => {
+interface VideoProps {
+  video: IVideo;
+}
+
+export const Video: React.FC<VideoProps> = ({ video }) => {
+  const parseVideoProgress = () => {
+    const bytes_downloaded =
+      (video.download.progress * 100 * (video.size || 0)) / 100;
+    const percentage = Math.round(video.download.progress * 100);
+    const megabytes_downloaded = (bytes_downloaded / 1000000).toFixed(2);
+    const total_megabytes = ((video.size || 0) / 1000000).toFixed(2);
+
+    return {
+      downloaded: `${megabytes_downloaded}mb / ${total_megabytes}mb`,
+      percentage: `${percentage}%`,
+    };
+  };
+
   return (
     <Container>
       <ThumbnailContainer>
@@ -28,8 +47,7 @@ export const Video: React.FC = () => {
         </ThumbnailLayer>
         <Thumbnail
           source={{
-            uri:
-              'https://scontent.ffln1-1.fna.fbcdn.net/v/t15.5256-10/p206x206/74666062_527880641100872_1704539727983542272_n.jpg?_nc_cat=104&ccb=1-3&_nc_sid=ad6a45&_nc_ohc=TcbVucNCUmcAX-gB_Ut&_nc_oc=AQkwBCrPMCHypZOK7qsBtzA0NaXjwoU5-bBi_n1gGj3aiLOq0isqdILeRZjS2VwMnwHOhXpGQfleSWqjTn9bcP1E&_nc_ht=scontent.ffln1-1.fna&tp=6&oh=c8b6efd588e05e1075865de0b3602e92&oe=609D1068',
+            uri: video.thumb,
           }}
           style={{ resizeMode: 'cover' }}
         />
@@ -38,8 +56,8 @@ export const Video: React.FC = () => {
         <VideoTitle>Lorem ipsum dor let sir</VideoTitle>
         <VideoSocialType>Facebook video</VideoSocialType>
         <VideoProgress>
-          23.5mb / 55.3mb -{' '}
-          <VideoProgressStatus>75% baixados</VideoProgressStatus>
+          {parseVideoProgress().downloaded} {parseVideoProgress().percentage} -{' '}
+          <VideoProgressStatus>Baixando...</VideoProgressStatus>
         </VideoProgress>
       </VideoInfo>
       <ActionIcon>

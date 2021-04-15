@@ -9,12 +9,12 @@ export const Container = styled(Background)`
   flex: 1;
 `;
 
-export const AddVideoButton = styled(RectButton)`
+export const AddVideoButton = styled(RectButton).attrs({
+  rippleColor: AppColors.background.color_1,
+})`
   width: 100%;
   border-radius: 30px;
   flex: 1;
-
-  background-color: rgba(2, 168, 220, 0.1);
 
   align-items: center;
   justify-content: center;
@@ -51,7 +51,6 @@ export const HomeTitleBar = styled(LinearGradient).attrs({
   width: 45px;
   height: 3px;
   border-radius: 5px;
-  background-color: red;
 `;
 
 export const EmptyContainer = styled.View`

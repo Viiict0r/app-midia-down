@@ -77,7 +77,7 @@ export const VideoManagerProvider: React.FC = ({ children }) => {
       .progress(percent => {
         console.log('[progress]:', percent);
 
-        video.download.progress = percent * 100;
+        video.download.progress = percent;
 
         dispatch({
           type: VideoReducerActions.UPDATE_VIDEO_DATA,
@@ -87,7 +87,7 @@ export const VideoManagerProvider: React.FC = ({ children }) => {
       .done(() => {
         video.download.completed = true;
         video.download.paused = false;
-        video.download.progress = 100;
+        video.download.progress = 1;
 
         console.log('Done.');
 

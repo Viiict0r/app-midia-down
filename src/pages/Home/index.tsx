@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { FlatList, SafeAreaView } from 'react-native';
 import FeatherIcon from 'react-native-vector-icons/Feather';
@@ -28,12 +28,16 @@ const Index: React.FC = () => {
     navigate('VideoLink');
   };
 
+  const appVideoList = useMemo(() => {
+    console.log('videos updated!');
+    return videos;
+  }, [videos]);
+
   return (
     <Container>
       <SafeAreaView>
         <FlatList
-          data={[{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }]}
-          // data={[]}
+          data={videos}
           style={{ padding: 10 }}
           ListHeaderComponent={
             <HomeTitleContainer>
@@ -56,7 +60,7 @@ const Index: React.FC = () => {
               </EmptyText>
             </EmptyContainer>
           }
-          renderItem={item => <Video />}
+          renderItem={item => <Video video={item.item} />}
           keyExtractor={item => item.id}
         />
       </SafeAreaView>

@@ -8,4 +8,5 @@ export const AppColors = {
     color_2: '#02A8DC',
   },
   info: '#3A3F4DEF',
+  error: '#FF5858',
 };
