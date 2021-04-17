@@ -1,9 +1,11 @@
 import cheerio from 'cheerio';
+import { IDownloader } from '../models/IDownloader';
 
-import { SocialDownloader, VideoLink } from '../SocialDownloader';
+import { VideoData } from '../types';
+import { isURL } from '../utils/isURL';
 
-export class FBDownloader implements SocialDownloader {
-  async fetchMidiaLink(video_url: string): Promise<VideoLink> {
+export class Facebook implements IDownloader {
+  async extractVideoData(video_url: string): Promise<VideoData> {
     const fb_response = await fetch(video_url, {
       headers: {
         'sec-fetch-dest': 'document',
@@ -44,5 +46,13 @@ export class FBDownloader implements SocialDownloader {
         sd: sd_link,
       },
     };
+  }
+
+  public validateURL(video_url: string): boolean {
+    if (String(video_url).indexOf('facebook') !== -1 && isURL(video_url)) {
+      return true;
+    }
+
+    return false;
   }
 }
