@@ -189,6 +189,8 @@ export const VideoManagerProvider: React.FC = ({ children }) => {
   const loadVideos = useCallback(async () => {
     const deviceData = await readLocalData();
 
+    console.log(deviceData);
+
     dispatch({
       type: VideoReducerActions.SET_DATA,
       payload: deviceData,
