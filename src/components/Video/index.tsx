@@ -18,6 +18,7 @@ import {
   VideoProgress,
   VideoProgressStatus,
   VideoSuccessInfo,
+  VideoErrorInfo,
 } from './styles';
 
 interface VideoProps {
@@ -69,6 +70,13 @@ export const Video: React.FC<VideoProps> = ({ video }) => {
           <VideoProgress>
             {parseVideoSizeToMegabytes()} -{' '}
             <VideoSuccessInfo>Baixado</VideoSuccessInfo>
+          </VideoProgress>
+        )}
+
+        {video.download.status === VideoDownloadStatus.FAILURE && (
+          <VideoProgress>
+            {parseVideoSizeToMegabytes()} -{' '}
+            <VideoErrorInfo>Falha no download</VideoErrorInfo>
           </VideoProgress>
         )}
 

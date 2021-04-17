@@ -54,6 +54,12 @@ export const VideoSuccessInfo = styled.Text`
   color: ${AppColors.success};
 `;
 
+export const VideoErrorInfo = styled.Text`
+  font-family: 'Poppins-Light';
+  font-size: 12px;
+  color: ${AppColors.error};
+`;
+
 export const VideoTitle = styled.Text`
   font-size: 14px;
   font-family: 'Poppins-Regular';
