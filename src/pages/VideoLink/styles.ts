@@ -1,8 +1,13 @@
-import { LinearGradient } from 'expo-linear-gradient';
+import { FlatList } from 'react-native';
 import styled from 'styled-components/native';
 
 import { Background } from '../../components';
 import { AppColors } from '../../styles/colors';
+import { SocialNetworkOption } from './types';
+
+interface SocialContainerProps {
+  selected: boolean;
+}
 
 export const Container = styled(Background)`
   flex: 1;
@@ -75,67 +80,36 @@ export const ErrorText = styled.Text`
   text-align: center;
 `;
 
-export const ModalContainer = styled.View`
-  position: absolute;
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  z-index: 10;
-  background-color: rgba(0, 0, 0, 0.4);
+export const SocialContainer = styled.View<SocialContainerProps>`
+  margin-right: 15px;
+  padding: 10px;
+  min-width: 100px;
 
+  border-width: 1px;
+  border-color: #fff;
+  border-radius: 15px;
+
+  opacity: ${props => (props.selected ? '1' : '0.3')};
+`;
+
+export const SocialIcon = styled.View`
   align-items: center;
 `;
 
-export const Modal = styled(Background)`
-  width: 90%;
-  top: 25%;
-  padding: 15px;
-  border-radius: 10px;
-`;
-
-export const ModalContent = styled.View`
-  margin-top: 20px;
-`;
-
-export const ModalTitle = styled.Text`
-  font-size: 16px;
-  color: #fff;
+export const SocialText = styled.Text`
+  margin-top: 10px;
+  font-size: 12px;
   font-family: 'Poppins-Regular';
-`;
-
-export const ModalTitleBar = styled(LinearGradient).attrs({
-  colors: [AppColors.primary.color_2, AppColors.primary.color_1],
-  start: [0.9, 0.5],
-})`
-  width: 45px;
-  height: 3px;
-  border-radius: 5px;
-`;
-
-export const VideoThumb = styled.Image.attrs({
-  style: {
-    resizeMode: 'cover',
-  },
-})`
-  width: 100%;
-  height: 180px;
-  border-radius: 10px;
-`;
-
-export const VideoTitle = styled.Text`
-  font-family: 'Poppins-Light';
-  font-size: 14px;
   color: #fff;
   text-align: center;
-  margin-top: 10px;
 `;
 
-export const Cancel = styled.Text`
-  font-family: 'Poppins-Regular';
-  color: ${AppColors.error};
+export const SocialBlock = styled.View`
+  margin-top: 25px;
 `;
 
-export const CancelContainer = styled.View`
-  align-items: center;
-  margin-top: 10px;
+export const SocialNetworkList = styled(
+  FlatList as new () => FlatList<SocialNetworkOption>,
+)`
+  margin-top: 5px;
 `;

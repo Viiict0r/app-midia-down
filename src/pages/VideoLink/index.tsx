@@ -1,23 +1,33 @@
 // @refresh reset
 
-import React, { useState } from 'react';
+import React, { useMemo, useState, useRef, useCallback } from 'react';
+
 import {
-  Alert,
   SafeAreaView,
   KeyboardAvoidingView,
-  TouchableWithoutFeedback,
   Keyboard,
+  FlatList,
+  Alert,
 } from 'react-native';
+
 import { useNavigation } from '@react-navigation/native';
-import FeatherIcon from 'react-native-vector-icons/Feather';
-
+import { Modalize } from 'react-native-modalize';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+
+import FeatherIcon from 'react-native-vector-icons/Feather';
+import FAIcon from 'react-native-vector-icons/FontAwesome5';
+
 import { Input, Button } from '../../components';
-
-import { isURL } from '../../downloader/validations/isURL';
-import { FBDownloader } from '../../downloader/socials/fb.downloader';
-
+import { ConfirmModal } from './ConfirmModal';
+import { isURL } from '../../downloader/utils/isURL';
+import { Downloader } from '../../downloader';
+import { SocialNetworkTypes, VideoData } from '../../downloader/types';
 import { useVideoManager } from '../../hooks/useVideoManager';
+import {
+  useQualitySelection,
+  VideoQuality,
+} from '../../hooks/useQualitySelection';
+import { SocialNetworkOption } from './types';
 
 import {
   Container,
@@ -30,15 +40,11 @@ import {
   Info,
   ActionContainer,
   ErrorText,
-  ModalContainer,
-  Modal,
-  ModalTitle,
-  VideoThumb,
-  ModalContent,
-  ModalTitleBar,
-  VideoTitle,
-  Cancel,
-  CancelContainer,
+  SocialContainer,
+  SocialIcon,
+  SocialText,
+  SocialBlock,
+  SocialNetworkList,
 } from './styles';
 
 enum ScreenState {
@@ -47,20 +53,27 @@ enum ScreenState {
   INITIAL = 'initial',
 }
 
-const TEST_VIDEO_LINK =
-  'https://www.facebook.com/MetDaanDIY/videos/3747701441995397/';
+// const TEST_VIDEO_LINK =
+//   'https://pt-br.facebook.com/melhoresvideosmv/videos/638695059484112/';
 
 const VideoLink: React.FC = () => {
-  const [thumbImage, setThumbImage] = useState('');
-  const [videoLink, setVideoLink] = useState(TEST_VIDEO_LINK);
-  const [inputValue, setInputValue] = useState(TEST_VIDEO_LINK);
+  const [videoData, setVideoData] = useState<VideoData | null>(null);
+  const [inputValue, setInputValue] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [screenState, setScreenState] = useState<ScreenState>(
     ScreenState.INITIAL,
   );
+  const [
+    selectedSocialNetwork,
+    setSelectedSocialNetwork,
+  ] = useState<SocialNetworkOption | null>(null);
 
   const { addVideo } = useVideoManager();
+  const { currentSelectedQuality } = useQualitySelection();
   const { navigate, goBack } = useNavigation();
+
+  const flatlistRef = useRef<FlatList>(null);
+  const modalRef = useRef<Modalize>(null);
 
   const handleVideoLinkChange = (link: string) => {
     setError(null);
@@ -68,20 +81,33 @@ const VideoLink: React.FC = () => {
   };
 
   const handleReset = () => {
-    setVideoLink('');
     setInputValue('');
     setScreenState(ScreenState.INITIAL);
-    setThumbImage('');
+    setVideoData(null);
+    setError(null);
   };
 
+  const handleSocialNetworkSelect = useCallback(
+    (socialNetwork: SocialNetworkOption) => {
+      handleReset();
+
+      setSelectedSocialNetwork(socialNetwork);
+    },
+    [],
+  );
+
   const handleVideoDownload = async () => {
-    if (screenState === ScreenState.CONFIRM) {
-      // Add video download to queue
+    Keyboard.dismiss();
 
-      addVideo(videoLink, thumbImage);
+    if (!selectedSocialNetwork) {
+      Alert.alert('Erro', 'Selecione a rede social para continuar');
+      return;
+    }
 
-      navigate('Home');
-
+    if (!inputValue || !inputValue.length) {
+      setError(
+        'Você deve informar o link do video no\ncampo acima para continuar',
+      );
       return;
     }
 
@@ -92,20 +118,27 @@ const VideoLink: React.FC = () => {
       return;
     }
 
+    const downloader = new Downloader(selectedSocialNetwork.type);
+
+    if (!downloader.validateURL(inputValue)) {
+      setError('O link informado é inválido para esse tipo de rede social.');
+      return;
+    }
+
     setError(null);
     setScreenState(ScreenState.LOADING);
 
     try {
-      const downloader = new FBDownloader();
-      const result = await downloader.fetchMidiaLink(inputValue);
+      const videoData = await downloader.extractVideoData(inputValue);
 
-      console.log(result);
+      console.log(videoData);
 
-      if (result.thumbURL && result.videoURL) {
-        setThumbImage(result.thumbURL);
-        setVideoLink(result.videoURL);
+      if (
+        videoData.thumbURL &&
+        (videoData.videoURL.hd || videoData.videoURL.sd)
+      ) {
+        setVideoData(videoData);
 
-        setScreenState(ScreenState.CONFIRM);
         return;
       }
 
@@ -120,6 +153,60 @@ const VideoLink: React.FC = () => {
     }
   };
 
+  const handleConfirm = () => {
+    let videoLink = null;
+
+    switch (currentSelectedQuality) {
+      case VideoQuality.HD:
+        videoLink = videoData?.videoURL.hd;
+        break;
+      case VideoQuality.SD:
+        videoLink = videoData?.videoURL.sd;
+        break;
+      default:
+        videoLink = null;
+        break;
+    }
+
+    if (!videoLink) {
+      Alert.alert('Erro', 'Selecione a qualidade do video');
+      return;
+    }
+
+    if (!videoData?.thumbURL) return;
+
+    addVideo(videoLink, videoData.thumbURL);
+
+    modalRef.current?.close();
+
+    navigate('Home');
+  };
+
+  const socialNetworkOptions = useMemo<SocialNetworkOption[]>(() => {
+    return [
+      {
+        text: 'Facebook',
+        icon_name: 'facebook-f',
+        type: SocialNetworkTypes.FACEBOOK,
+      },
+      {
+        text: 'Twitter',
+        icon_name: 'twitter',
+        type: SocialNetworkTypes.TWITTER,
+      },
+      {
+        text: 'Instagram',
+        icon_name: 'instagram',
+        type: SocialNetworkTypes.INSTAGRAM,
+      },
+      {
+        text: 'Reddit',
+        icon_name: 'reddit-alien',
+        type: SocialNetworkTypes.REDDIT,
+      },
+    ];
+  }, []);
+
   return (
     <Container>
       <SafeAreaView style={{ flex: 1 }}>
@@ -132,73 +219,74 @@ const VideoLink: React.FC = () => {
           </HeaderTitleContainer>
         </Header>
         <KeyboardAvoidingView behavior="height">
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <Content>
-              <Title>Como utilizar?</Title>
-              <Info>1. Copie o link do vídeo</Info>
-              <Info>2. Cole no campo abaixo</Info>
-              <Info>3. Clique em baixar</Info>
+          <Content>
+            <Title>Como utilizar?</Title>
+            <Info>1. Copie o link do vídeo</Info>
+            <Info>2. Selecione a rede social desejada</Info>
+            <Info>3. Cole o link de download no campo</Info>
+            <Info>4. Clique em baixar</Info>
 
-              <Input
-                icon="link"
-                placeholderTextColor="#ffffff3c"
-                placeholder="Cole o link do vídeo aqui"
-                error={!!error}
-                style={{ marginTop: 30 }}
-                value={inputValue}
-                onChangeText={handleVideoLinkChange}
+            <SocialBlock>
+              <Title>De onde você deseja baixar?</Title>
+
+              <SocialNetworkList
+                horizontal
+                data={socialNetworkOptions}
+                ref={flatlistRef}
+                showsHorizontalScrollIndicator={false}
+                renderItem={item => (
+                  <TouchableOpacity
+                    onPress={() => handleSocialNetworkSelect(item.item)}
+                    activeOpacity={0.6}
+                  >
+                    <SocialContainer
+                      selected={item.item.text === selectedSocialNetwork?.text}
+                    >
+                      <SocialIcon>
+                        <FAIcon
+                          name={item.item.icon_name}
+                          size={30}
+                          color="#fff"
+                        />
+                      </SocialIcon>
+                      <SocialText>{item.item.text}</SocialText>
+                    </SocialContainer>
+                  </TouchableOpacity>
+                )}
+                keyExtractor={item => item.text}
               />
+            </SocialBlock>
 
-              <ActionContainer>
-                {error && <ErrorText>{error}</ErrorText>}
-                {/* <ErrorText>
-                  Ops, não conseguimos localizar este vídeo :({'\n'}
-                  Verifique a URL e tente novamente...
-                </ErrorText> */}
-                <Button
-                  text="Baixar"
-                  style={{ marginTop: 20 }}
-                  onPress={handleVideoDownload}
-                  loading={screenState === ScreenState.LOADING}
-                />
-              </ActionContainer>
-            </Content>
-          </TouchableWithoutFeedback>
+            <Input
+              icon="link"
+              placeholderTextColor="#ffffff3c"
+              placeholder="Cole o link do video aqui"
+              error={!!error}
+              style={{ marginTop: 30 }}
+              value={inputValue}
+              editable={screenState === ScreenState.INITIAL}
+              onChangeText={handleVideoLinkChange}
+            />
+
+            <ActionContainer>
+              {error && <ErrorText>{error}</ErrorText>}
+
+              <Button
+                text="Baixar"
+                style={{ marginTop: 20 }}
+                onPress={handleVideoDownload}
+                loading={screenState === ScreenState.LOADING}
+              />
+            </ActionContainer>
+          </Content>
         </KeyboardAvoidingView>
       </SafeAreaView>
 
-      {screenState === ScreenState.CONFIRM && (
-        <ModalContainer>
-          <Modal>
-            <ModalTitle>
-              Começar a baixar{'\n'}
-              <ModalTitleBar />
-            </ModalTitle>
-            <ModalContent>
-              <VideoThumb
-                source={{
-                  uri: thumbImage,
-                }}
-              />
-              <VideoTitle>
-                Lorem ipsum dor let si teste ipsum dor let si
-              </VideoTitle>
-              <ActionContainer>
-                <Button
-                  text="Confirmar"
-                  style={{ marginTop: 20 }}
-                  onPress={handleVideoDownload}
-                />
-              </ActionContainer>
-              <CancelContainer>
-                <TouchableOpacity onPress={handleReset}>
-                  <Cancel>Cancelar</Cancel>
-                </TouchableOpacity>
-              </CancelContainer>
-            </ModalContent>
-          </Modal>
-        </ModalContainer>
-      )}
+      <ConfirmModal
+        modalizeRef={modalRef}
+        onConfirm={handleConfirm}
+        videoData={videoData}
+      />
     </Container>
   );
 };
