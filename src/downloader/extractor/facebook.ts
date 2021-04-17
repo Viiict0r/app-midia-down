@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 import cheerio from 'cheerio';
 import { IDownloader } from '../models/IDownloader';
 
@@ -26,12 +27,14 @@ export class Facebook implements IDownloader {
 
     // Check for sd quality
     if (response.indexOf('sd_src') !== -1) {
-      sd_link = response.split('sd_src:')[1].split(',')[0].replace('"', '');
+      sd_link = response.split('sd_src:')[1].split(',')[0];
+      sd_link = JSON.parse(`{"url": ${sd_link}}`).url;
     }
 
     // Check for hd quality
     if (response.indexOf('hd_src') !== -1) {
-      hd_link = response.split('hd_src:')[1].split(',')[0].replace('"', '');
+      hd_link = response.split('hd_src:')[1].split(',')[0];
+      hd_link = JSON.parse(`{"url": ${hd_link}}`).url;
     }
 
     // Get disponible video version
@@ -49,7 +52,8 @@ export class Facebook implements IDownloader {
   }
 
   public validateURL(video_url: string): boolean {
-    if (String(video_url).indexOf('facebook') !== -1 && isURL(video_url)) {
+    console.log(video_url);
+    if (String(video_url).indexOf('facebook') !== -1) {
       return true;
     }
 

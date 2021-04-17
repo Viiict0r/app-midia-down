@@ -8,7 +8,9 @@ export class Downloader {
   public validateURL(video_url: string): boolean {
     const extractor = this.getExtractorInstance();
 
-    if (!extractor) return false;
+    if (!extractor) {
+      return false;
+    }
 
     return extractor?.validateURL(video_url);
   }

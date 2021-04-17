@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { FlatList, SafeAreaView } from 'react-native';
 import FeatherIcon from 'react-native-vector-icons/Feather';
@@ -27,11 +27,6 @@ const Index: React.FC = () => {
   const handleAddButtonClick = () => {
     navigate('VideoLink');
   };
-
-  const appVideoList = useMemo(() => {
-    console.log('videos updated!');
-    return videos;
-  }, [videos]);
 
   return (
     <Container>

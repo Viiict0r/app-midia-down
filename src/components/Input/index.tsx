@@ -8,11 +8,13 @@ import { AppColors } from '../../styles/colors';
 interface InputProps extends TextInputProps {
   icon: string;
   error?: boolean;
+  digitError?: boolean;
 }
 
 export const Input: React.FC<InputProps> = ({
   icon,
   error = false,
+  digitError = false,
   style = [],
   ...rest
 }) => {
@@ -21,9 +23,9 @@ export const Input: React.FC<InputProps> = ({
       <TextInput {...rest} />
 
       <FeatherIcon
-        name={error ? 'alert-circle' : icon}
+        name={error || digitError ? 'alert-circle' : icon}
         size={20}
-        color={error ? AppColors.error : '#fff'}
+        color={error || digitError ? AppColors.error : '#fff'}
       />
     </Container>
   );
