@@ -17,7 +17,7 @@ import { Input, Button } from '../../components';
 import { isURL } from '../../downloader/validations/isURL';
 import { FBDownloader } from '../../downloader/socials/fb.downloader';
 
-import { useVideoManager } from '../../hooks/videoManager';
+import { useVideoManager } from '../../hooks/useVideoManager';
 
 import {
   Container,

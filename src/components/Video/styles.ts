@@ -1,5 +1,7 @@
 import styled from 'styled-components/native';
 
+import { AppColors } from '../../styles/colors';
+
 export const Container = styled.View`
   border-radius: 10px;
   background-color: #94949424;
@@ -44,6 +46,12 @@ export const VideoInfo = styled.View`
   flex: 1;
   justify-content: center;
   margin-left: 10px;
+`;
+
+export const VideoSuccessInfo = styled.Text`
+  font-family: 'Poppins-Light';
+  font-size: 12px;
+  color: ${AppColors.success};
 `;
 
 export const VideoTitle = styled.Text`

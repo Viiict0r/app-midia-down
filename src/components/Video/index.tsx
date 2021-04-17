@@ -3,7 +3,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Feather';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
 
-import { IVideo } from '../../hooks/videoManager';
+import { IVideo, VideoDownloadStatus } from '../../hooks/useVideoManager/types';
 
 import {
   Container,
@@ -17,6 +17,7 @@ import {
   ActionIcon,
   VideoProgress,
   VideoProgressStatus,
+  VideoSuccessInfo,
 } from './styles';
 
 interface VideoProps {
@@ -24,6 +25,10 @@ interface VideoProps {
 }
 
 export const Video: React.FC<VideoProps> = ({ video }) => {
+  const parseVideoSizeToMegabytes = () => {
+    return `${((video.size || 0) / 1000000).toFixed(2)}mb`;
+  };
+
   const parseVideoProgress = () => {
     const bytes_downloaded =
       (video.download.progress * 100 * (video.size || 0)) / 100;
@@ -40,14 +45,18 @@ export const Video: React.FC<VideoProps> = ({ video }) => {
   return (
     <Container>
       <ThumbnailContainer>
-        <ThumbnailLayer>
-          <VideoPorcentage>
-            <FAIcon name="pause" color="#fff" size={20} />
-          </VideoPorcentage>
-        </ThumbnailLayer>
+        {video.download.status === VideoDownloadStatus.PROGRESS && (
+          <ThumbnailLayer>
+            <VideoPorcentage>
+              <FAIcon name="pause" color="#fff" size={20} />
+            </VideoPorcentage>
+          </ThumbnailLayer>
+        )}
         <Thumbnail
           source={{
-            uri: video.thumb,
+            uri:
+              video.thumb ||
+              'https://lh3.googleusercontent.com/proxy/NCNihp7CezU2ZfcjKaSbWoEGg5X3MG1nNRF1VOQTkMotR_6bZvj9wkX6QAzTfomiOP1kLs_Bv_IEm-kc30kj6daCjJqkmXl3-sYvI04Pfw',
           }}
           style={{ resizeMode: 'cover' }}
         />
@@ -55,10 +64,26 @@ export const Video: React.FC<VideoProps> = ({ video }) => {
       <VideoInfo>
         <VideoTitle>Lorem ipsum dor let sir</VideoTitle>
         <VideoSocialType>Facebook video</VideoSocialType>
-        <VideoProgress>
-          {parseVideoProgress().downloaded} {parseVideoProgress().percentage} -{' '}
-          <VideoProgressStatus>Baixando...</VideoProgressStatus>
-        </VideoProgress>
+
+        {video.download.status === VideoDownloadStatus.COMPLETE && (
+          <VideoProgress>
+            {parseVideoSizeToMegabytes()} -{' '}
+            <VideoSuccessInfo>Baixado</VideoSuccessInfo>
+          </VideoProgress>
+        )}
+
+        {video.download.status === VideoDownloadStatus.PROGRESS && (
+          <VideoProgress>
+            {parseVideoProgress().downloaded} {parseVideoProgress().percentage}{' '}
+            - <VideoProgressStatus>Baixando...</VideoProgressStatus>
+          </VideoProgress>
+        )}
+
+        {video.download.status === VideoDownloadStatus.INITIALIZING && (
+          <VideoProgress>
+            <VideoProgressStatus>Iniciando download...</VideoProgressStatus>
+          </VideoProgress>
+        )}
       </VideoInfo>
       <ActionIcon>
         <TouchableOpacity>

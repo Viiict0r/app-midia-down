@@ -4,7 +4,7 @@ import { FlatList, SafeAreaView } from 'react-native';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 
 import { Video } from '../../components';
-import { IVideo, useVideoManager } from '../../hooks/videoManager';
+import { useVideoManager } from '../../hooks/useVideoManager';
 
 import { AppColors } from '../../styles/colors';
 
@@ -39,6 +39,7 @@ const Index: React.FC = () => {
         <FlatList
           data={videos}
           style={{ padding: 10 }}
+          contentContainerStyle={{ paddingBottom: 50 }}
           ListHeaderComponent={
             <HomeTitleContainer>
               <HomeTitleText>Vídeos baixados</HomeTitleText>

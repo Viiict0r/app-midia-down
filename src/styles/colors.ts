@@ -9,4 +9,5 @@ export const AppColors = {
   },
   info: '#3A3F4DEF',
   error: '#FF5858',
+  success: '#78F885',
 };

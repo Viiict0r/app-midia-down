@@ -29,7 +29,7 @@ export const Gradient = styled(LinearGradient)`
   align-items: center;
   justify-content: center;
 
-  bottom: 40px;
+  bottom: 30px;
   right: 25px;
 `;
 
