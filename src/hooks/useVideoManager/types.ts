@@ -10,6 +10,7 @@ export interface IVideo {
   path: string;
   size?: number;
   thumb: string;
+  title: string;
   download: {
     status: VideoDownloadStatus;
     progress: number;

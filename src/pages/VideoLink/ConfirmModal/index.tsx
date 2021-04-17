@@ -49,9 +49,10 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
 
   useEffect(() => {
     if (videoData) {
+      selectQuality(null);
       modalizeRef.current?.open();
     }
-  }, [videoData, modalizeRef]);
+  }, [videoData, modalizeRef, selectQuality]);
 
   return (
     <Modalize ref={modalizeRef} modalStyle={styles.modalStyle}>
@@ -64,7 +65,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             source={{ uri: videoData?.thumbURL || tempURL }}
             style={styles.videoThumb}
           />
-          <VideoTitle>Lorem ipsum video title dor let si</VideoTitle>
+          <VideoTitle>{videoData?.title || '< Vídeo sem título >'}</VideoTitle>
 
           <CheckboxContainer>
             <Checkbox

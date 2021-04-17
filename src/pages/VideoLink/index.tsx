@@ -175,7 +175,11 @@ const VideoLink: React.FC = () => {
 
     if (!videoData?.thumbURL) return;
 
-    addVideo(videoLink, videoData.thumbURL);
+    addVideo(
+      videoLink,
+      videoData.thumbURL,
+      videoData.title || 'Video sem título',
+    );
 
     modalRef.current?.close();
 

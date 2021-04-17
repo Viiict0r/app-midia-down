@@ -3,7 +3,6 @@ import cheerio from 'cheerio';
 import { IDownloader } from '../models/IDownloader';
 
 import { VideoData } from '../types';
-import { isURL } from '../utils/isURL';
 
 export class Facebook implements IDownloader {
   async extractVideoData(video_url: string): Promise<VideoData> {
@@ -22,6 +21,8 @@ export class Facebook implements IDownloader {
     const $ = cheerio.load(response);
 
     const thumbURL = $('meta[property="og:image"]').first().attr('content');
+    const title = $('meta[property="og:title"]').first().attr('content');
+
     let sd_link;
     let hd_link;
 
@@ -48,6 +49,7 @@ export class Facebook implements IDownloader {
         hd: hd_link,
         sd: sd_link,
       },
+      title,
     };
   }
 

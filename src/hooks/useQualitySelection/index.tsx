@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState } from 'react';
 import { VideoQuality } from './types';
 
 interface IQualitySelectionContext {
-  selectQuality: (quality: VideoQuality) => void;
+  selectQuality: (quality: VideoQuality | null) => void;
   currentSelectedQuality: VideoQuality | null;
 }
 
@@ -16,7 +16,7 @@ export const QualitySelectionProvider: React.FC = ({ children }) => {
     null,
   );
 
-  const selectQuality = (quality: VideoQuality) => {
+  const selectQuality = (quality: VideoQuality | null) => {
     setSelectedQuality(quality);
   };
 

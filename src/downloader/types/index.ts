@@ -13,4 +13,5 @@ export interface VideoQuality {
 export interface VideoData {
   videoURL: VideoQuality;
   thumbURL: string | undefined;
+  title: string | undefined;
 }

@@ -31,7 +31,7 @@ export enum ManagerStatus {
 interface IVideoManagerContext {
   videos: IVideo[];
   status: ManagerStatus;
-  addVideo(video_url: string, thumb_url: string): void;
+  addVideo(video_url: string, thumb_url: string, video_title: string): void;
   deleteVideo(video: IVideo): void;
 }
 
@@ -105,7 +105,11 @@ export const VideoManagerProvider: React.FC = ({ children }) => {
     [saveLocalData],
   );
 
-  const addVideo = async (video_url: string, video_thumb: string) => {
+  const addVideo = async (
+    video_url: string,
+    video_thumb: string,
+    video_title: string,
+  ) => {
     const filePath = RNFS.ExternalDirectoryPath;
     const videoId = `MD-${uuid()}`;
     const videoPath = `${filePath}/${videoId}.mp4`;
@@ -114,6 +118,7 @@ export const VideoManagerProvider: React.FC = ({ children }) => {
       id: videoId,
       thumb: video_thumb,
       path: videoPath,
+      title: video_title,
       download: {
         status: VideoDownloadStatus.INITIALIZING,
         paused: false,

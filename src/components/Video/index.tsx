@@ -63,7 +63,7 @@ export const Video: React.FC<VideoProps> = ({ video }) => {
         />
       </ThumbnailContainer>
       <VideoInfo>
-        <VideoTitle>Lorem ipsum dor let sir</VideoTitle>
+        <VideoTitle>{video.title || 'Vídeo sem título'}</VideoTitle>
         <VideoSocialType>Facebook video</VideoSocialType>
 
         {video.download.status === VideoDownloadStatus.COMPLETE && (
